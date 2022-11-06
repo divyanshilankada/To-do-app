@@ -51,7 +51,7 @@
     margin-top: 20px;
     background-color: rgb(2, 170, 150);
     color: white;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     text-decoration: none;
     display: flex;
     flex-direction: row;
@@ -67,4 +67,11 @@
 .register_p
 {
     color: rgb(250, 48, 48);
+    margin-top: 15px;
+}
+
+.incorrect
+{
+    color: red;
+    font-size: x-small;
 }

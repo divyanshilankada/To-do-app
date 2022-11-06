@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import '../styles/register.css';
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from 'axios'
 
 
@@ -10,6 +10,16 @@ function RegisterPage () {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [userExists, setUserExists] = useState("");
+    const [error, setError] = useState(true);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        fetch('https://to-do-apis-app.herokuapp.com/register')
+            .then(response => response.json())
+            .then(data => setUserExists(data.message))          
+    },[]);
+
 
     function handleUsername(e)
     {
@@ -29,9 +39,60 @@ function RegisterPage () {
         setConfirmPassword(cpw);
     }
 
-    function handleSubmit()
+    async function handleSubmit()
     {
         console.log(username, password, confirmPassword);
+
+        if(username !== "" || password!== "" || confirmPassword!=="")
+        {
+            setError(true);
+
+            let exists = true;
+
+            for(let i=0; i<userExists.length; i++)
+            {
+                if(userExists[i].user_name === username)
+                {
+                    exists = false;
+                }
+            }
+
+            console.log(exists);
+            if(exists === true)
+            {
+                setError(true);
+
+                if(password === confirmPassword)
+                {
+                    setError(true);
+                    let userObj = {"user_name" : username, "password" : password};
+    
+                    axios.post('https://to-do-apis-app.herokuapp.com/register',userObj)
+                        .then(response => {
+                            console.log(response);
+                        })
+                        .catch(error => {
+                            console.log(error);
+                        });
+    
+                    navigate("/login");
+                }
+                else
+                {
+                    setError(false);
+                }
+
+            }
+            else
+            {
+                setError(false);
+            }
+            
+        }
+        else
+        {
+            setError(false)
+        }
     }
 
     return (
@@ -41,7 +102,8 @@ function RegisterPage () {
                 <input type="text" className='input_box' placeholder='Username' value={username} onChange={handleUsername}></input>
                 <input type="password" className='input_box' placeholder='Password' value={password} onChange={handlePassword}></input>
                 <input type="password" className='input_box' placeholder='Confirm password' value={confirmPassword} onChange={handleConfirmPassword}></input>
-                <Link className='register_button' to='/register' onClick={handleSubmit}>REGISTER</Link>
+                <button className='register_button' onClick={handleSubmit}>REGISTER</button>
+                {error === false ? <p className='incorrect'>*Incorrect details or user name already exists</p> : <></>}
                 <p className='register_p'>Member Login</p>
             </div>
         </div>

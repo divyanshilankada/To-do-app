@@ -24,6 +24,39 @@ router.get('/', async (req, res) => {
 
 });
 
+router.get('/:id', async (req, res) => {
+
+    try{
+
+        const userDetails = await UserRegister.findOne({user_name:req.params.id});
+
+        if(userDetails)
+        {
+            res.status(200).json({
+                status:"Success",
+                message:"exists"
+            })
+        }
+        else
+        {
+            res.status(200).json({
+                status:"Success",
+                message:"user does not exist"
+            })
+        }
+        
+        
+
+    }
+    catch(e){
+        res.status(401).json({ 
+            status:"Failed",
+            message:e.message
+        });
+    }
+
+});
+
 
 
 router.post('/', async (req, res) => {
